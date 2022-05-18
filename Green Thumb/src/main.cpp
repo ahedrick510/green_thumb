@@ -1,5 +1,5 @@
 #include <Arduino.h>
-
+#include <Servo.h>
 
 /* 
 D2 -> SW1
@@ -48,6 +48,11 @@ uint8_t MOTOR_BACK = 12;
 uint8_t LIGHT = A4;
 uint8_t SSR1 = 13;
 uint8_t SOIL = A0;
+uint8_t SERVO1 = 7;
+uint8_t SERVO2 = 8;
+uint8_t SERVO3 = 9;
+uint8_t SERVO4 = 10;
+
 
 
 uint16_t pA1 = 0b1000000000000000;
@@ -57,7 +62,7 @@ uint16_t pD1 = 0b0001000000000000;
 uint16_t pOff = 0b0000000000000000;
 uint16_t pOn = 0b1111111111111111;
 
-
+Servo servo;
 
 void phaseOut(uint16_t phases);
 void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, byte val);
@@ -69,6 +74,9 @@ void setup() {
   pinMode(pData, OUTPUT);
   pinMode(pCLK, OUTPUT);
   pinMode(pLatch, OUTPUT);
+
+  servo.attach(SERVO4);
+  servo.write(0);
   
 }
 
@@ -83,28 +91,38 @@ void loop() {
 
   //digitalWrite(LED_BUILTIN, HIGH);
   //delay(50);
+  digitalWrite(pEnable, HIGH);
+  delayMicroseconds(20);
 
-  //phaseOut(pOn);
+  phaseOut(pOn);
   //delay(50);
   //phaseOut(pOn);
-  //delay(2000);
-  //phaseOut(pOff);
+  delay(2000);
+  phaseOut(pOff);
   //delay(50);
   //phaseOut(pOff);
-  //delay(2000);
+  delay(2000);
 
-  for (int i = 0; i <= analogRead(SOIL)/100; i++) {
-    digitalWrite(LED_BUILTIN, HIGH);   
-    delay(200);                       
-    digitalWrite(LED_BUILTIN, LOW);    
-    delay(200);
+  for (int i = 0; i <= 90; i++) {
+    servo.write(i);
+    delay(20);
   }
+  for (int i = 90; i >= 0; i--) {
+    servo.write(i);
+    delay(20);
+  }
+
+
+  //for (int i = 0; i <= analogRead(SOIL)/100; i++) {
+    //digitalWrite(LED_BUILTIN, HIGH);   
+    //delay(200);                       
+    //digitalWrite(LED_BUILTIN, LOW);    
+    //delay(200);
+  //}
 
 }
 
 void phaseOut(uint16_t phases){
-  digitalWrite(pEnable, HIGH);
-  delayMicroseconds(20);
   digitalWrite(pLatch, LOW);
   delayMicroseconds(20);
   shiftOut(pData, pCLK,LSBFIRST, lowByte(phases));
@@ -113,8 +131,6 @@ void phaseOut(uint16_t phases){
   digitalWrite(pLatch, HIGH);
   delayMicroseconds(20);
   digitalWrite(pLatch, LOW);
-  delayMicroseconds(20);
-  digitalWrite(pEnable, HIGH);
   delayMicroseconds(20);
 }
 
