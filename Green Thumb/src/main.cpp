@@ -53,8 +53,6 @@ uint8_t SERVO2 = 8;
 uint8_t SERVO3 = 9;
 uint8_t SERVO4 = 10;
 
-
-
 uint16_t pA1 = 0b1000000000000000;
 uint16_t pB1 = 0b0100000000000000;
 uint16_t pC1 = 0b0010000000000000;
@@ -68,7 +66,6 @@ uint16_t pB3 = 0b0000000001000000;
 uint16_t pC3 = 0b0000000000100000;
 uint16_t pD3 = 0b0000000000010000;
 
-
 uint16_t pOff = 0b0000000000000000;
 uint16_t pOn = 0b1111111111111111;
 
@@ -78,45 +75,41 @@ void phaseOut(uint16_t phases);
 void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, byte val);
 void softPWM(uint8_t pin, uint16_t durationMilliS, uint8_t duty, uint16_t periodMicroS);
 
-void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(pEnable, OUTPUT);
-  pinMode(pData, OUTPUT);
-  pinMode(pCLK, OUTPUT);
-  pinMode(pLatch, OUTPUT);
-  pinMode(13, OUTPUT);
+void setup()
+{
+    // initialize digital pin LED_BUILTIN as an output.
+    pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(pEnable, OUTPUT);
+    pinMode(pData, OUTPUT);
+    pinMode(pCLK, OUTPUT);
+    pinMode(pLatch, OUTPUT);
+    pinMode(13, OUTPUT);
 
-  servo4.attach(SERVO4);
-  servo4.write(0);
+    servo4.attach(SERVO4);
+    servo4.write(0);
 
-  digitalWrite(pEnable, HIGH);
-  delayMicroseconds(20);
-
-  
+    digitalWrite(pEnable, HIGH);
+    delayMicroseconds(20);
 }
 
 // the loop function runs over and over again forever
-void loop() {
-  // Status LED Blink
-  digitalWrite(LED_BUILTIN, HIGH);   
-  delay(500);                       
-  digitalWrite(LED_BUILTIN, LOW);    
-  delay(500);
+void loop()
+{
+    // Status LED Blink
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(500);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(500);
 
+    //digitalWrite(LED_BUILTIN, HIGH);
+    //delay(50);
 
-  //digitalWrite(LED_BUILTIN, HIGH);
-  //delay(50);
-  
+    //phaseOut(pOn);
+    //delay(200);
+    //phaseOut(pOff);
+    //delay(200);
 
-
-
-  //phaseOut(pOn);
-  //delay(200);
-  //phaseOut(pOff);
-  //delay(200);
-
-  //for (int i = 0; i <= 50; i++) {
+    //for (int i = 0; i <= 50; i++) {
     //phaseOut(pA3);
     //delay(20);
     //phaseOut(pB3);
@@ -125,10 +118,10 @@ void loop() {
     //delay(20);
     //phaseOut(pD3);
     //delay(20);
-  //}
-  //phaseOut(pOff);
-  //phaseOut(pOff);
-  //phaseOut(pOff);
+    //}
+    //phaseOut(pOff);
+    //phaseOut(pOff);
+    //phaseOut(pOff);
     //digitalWrite(MOTOR_BACK, HIGH);
     //delay(3000);
     //digitalWrite(MOTOR_BACK, LOW);
@@ -137,37 +130,32 @@ void loop() {
     //delay(3000);
     //digitalWrite(MOTOR_FOR, LOW);
 
+    // for (int i = 0; i <= 90; i++)
+    // {
+    //     servo4.write(i);
+    //     delay(20);
+    // }
+    // for (int i = 90; i >= 0; i--)
+    // {
+    //     servo4.write(i);
+    //     delay(20);
+    // }
 
-
-
-
-  
-  
-
-  for (int i = 0; i <= 90; i++) {
-    servo4.write(i);
-    delay(20);
-  }
-  for (int i = 90; i >= 0; i--) {
-    servo4.write(i);
-    delay(20);
-  }
-
-
-  //for (int i = 0; i <= analogRead(SOIL)/100; i++) {
-    //digitalWrite(LED_BUILTIN, HIGH);   
-    //delay(200);                       
-    //digitalWrite(LED_BUILTIN, LOW);    
-    //delay(200);
-  //}
-
+    //for (int i = 0; i <= analogRead(SOIL)/100; i++) {
+    // digitalWrite(SSR1, HIGH);
+    // delay(2000);
+    // digitalWrite(SSR1, LOW);
+    // delay(2000);
+    //}
+    softPWM(SSR1, 300, 127, 20000);
 }
 
-void phaseOut(uint16_t phases){
+void phaseOut(uint16_t phases)
+{
     digitalWrite(pLatch, LOW);
     delayMicroseconds(20);
-    shiftOut(pData, pCLK,LSBFIRST, lowByte(phases));
-    shiftOut(pData, pCLK,LSBFIRST, highByte(phases));
+    shiftOut(pData, pCLK, LSBFIRST, lowByte(phases));
+    shiftOut(pData, pCLK, LSBFIRST, highByte(phases));
     delayMicroseconds(20);
     digitalWrite(pLatch, HIGH);
     delayMicroseconds(20);
@@ -177,31 +165,32 @@ void phaseOut(uint16_t phases){
 
 void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, byte val)
 {
-      int i;
+    int i;
 
-      for (i = 0; i < 8; i++)  {
-            if (bitOrder == LSBFIRST)
-                  digitalWrite(dataPin, !!(val & (1 << i)));
-            else      
-                  digitalWrite(dataPin, !!(val & (1 << (7 - i))));
-                  
-            digitalWrite(clockPin, HIGH);
-            delayMicroseconds(20);
-            digitalWrite(clockPin, LOW);
-            delayMicroseconds(20);
-      }
+    for (i = 0; i < 8; i++)
+    {
+        if (bitOrder == LSBFIRST)
+            digitalWrite(dataPin, !!(val & (1 << i)));
+        else
+            digitalWrite(dataPin, !!(val & (1 << (7 - i))));
+
+        digitalWrite(clockPin, HIGH);
+        delayMicroseconds(20);
+        digitalWrite(clockPin, LOW);
+        delayMicroseconds(20);
+    }
 }
 
-void softPWM(uint8_t pin, uint16_t durationMilliS, uint8_t duty, uint16_t periodMicroS) {
+void softPWM(uint8_t pin, uint16_t durationMilliS, uint8_t duty, uint16_t periodMicroS)
+{
     unsigned long t0 = 0;
     t0 = millis();
-    while ((millis()-t0) < durationMilliS){
+    while ((millis() - t0) < durationMilliS)
+    {
         digitalWrite(pin, HIGH);
-        delayMicroseconds(periodMicroS - periodMicroS*duty/255);
+        delayMicroseconds(periodMicroS - periodMicroS * duty / 255);
         digitalWrite(pin, LOW);
-        delayMicroseconds(periodMicroS*duty/255);
+        delayMicroseconds(periodMicroS * duty / 255);
     }
     digitalWrite(pin, LOW);
-
 }
-
